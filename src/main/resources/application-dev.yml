@@ -1,0 +1,52 @@
+spring:
+  dbfirst:
+    masterUrl: jdbc:mysql://localhost:3306/tl-vip?useUnicode=true&autoReconnect=true&rewriteBatchedStatements=true&socketTimeout=30000&connectTimeout=3000&serverTimezone=CTT
+    slave1Url: jdbc:mysql://localhost:3306/tl-vip?useUnicode=true&autoReconnect=true&rewriteBatchedStatements=true&socketTimeout=30000&connectTimeout=3000&serverTimezone=CTT
+    slave2Url: jdbc:mysql://localhost:3306/tl-vip?useUnicode=true&autoReconnect=true&rewriteBatchedStatements=true&socketTimeout=30000&connectTimeout=3000&serverTimezone=CTT
+    username: root
+    password: swYs6Q*gqdm5
+    driver: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    initialSize: 5
+    minIdle: 5
+    maxActive: 20
+    maxWait: 60000
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 1 FROM DUAL
+    testWhileIdle: true
+    testOnBorrow: true
+    testOnReturn: false
+    poolPreparedStatements: true
+    maxOpenPreparedStatementConnectionSize: 20
+    filters: stat,wall
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+  redis:
+    host: r-bp1ar2e1rnet73g9ygpd.redis.rds.aliyuncs.com
+    password: avkv1231ahhW
+    port: 6379
+    timeOut: 5000
+    maxIdle: 50
+    maxWaitMillis: 5000
+    maxTotal: 500
+    database: 0
+    databasehot: 15
+  appconfig:
+    name: dev
+  upload: D:/sucai/test/
+  Adupload: C:/Users/zxt/
+
+
+  thymeleaf:
+    cache: false
+
+
+
+logging:
+  level:
+    com.uknowz: debug
+
+
+alipay:
+  config:
+    keyPath: D:\keyPath\

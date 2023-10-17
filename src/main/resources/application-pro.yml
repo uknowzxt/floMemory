@@ -1,0 +1,41 @@
+spring:
+  dbfirst:
+    masterUrl: jdbc:mysql://localhost:3306/india28?useUnicode=true&autoReconnect=true&rewriteBatchedStatements=true&socketTimeout=30000&connectTimeout=3000
+    slave1Url: jdbc:mysql://localhost:3306/india28?useUnicode=true&autoReconnect=true&rewriteBatchedStatements=true&socketTimeout=30000&connectTimeout=3000
+    slave2Url: jdbc:mysql://localhost:3306/india28?useUnicode=true&autoReconnect=true&rewriteBatchedStatements=true&socketTimeout=30000&connectTimeout=3000
+    username: root
+    password: 2PJoMwe12ryhu123C8nVgwH
+    driver: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    initialSize: 5
+    minIdle: 5
+    maxActive: 20
+    maxWait: 60000
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 1 FROM DUAL
+    testWhileIdle: true
+    testOnBorrow: true
+    testOnReturn: false
+    poolPreparedStatements: true
+    maxOpenPreparedStatementConnectionSize: 20
+    filters: stat,wall
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+  redis:
+    host: redisindia2.cffqqh.ng.0001.aps1.cache.amazonaws.com
+    port: 10689
+    timeOut: 5000
+    maxIdle: 50
+    maxWaitMillis: 5000
+    maxTotal: 500
+    database: 0
+    databasehot: 15
+  appconfig:
+    name: pro
+  #重要隐私内容不要放在  /usr/local/tomcat/website/excel/ 目录下, 这个目录外链可访问.
+  upload: /usr/local/tomcat-india/website/excel/
+  Adupload: /usr/local/tomcat-india/website/excel/pass/
+
+alipay:
+  config:
+    keyPath: /usr/local/keyPath/

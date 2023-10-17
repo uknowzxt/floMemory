@@ -1,0 +1,55 @@
+server:
+  port: 8070
+  tomcat:
+    basedir: /data/upload_tmp
+spring:
+  profiles:
+    active: dev
+  application:
+    name: india28_bgm
+
+  servlet:
+    multipart:
+      maxFileSize: 100MB
+      maxRequestSize: 100MB
+  appconfig:
+    defaultKey: hlz(*Y6
+    path: /data/logs/${spring.application.name}
+
+logging:
+  config: classpath:logback-config.xml
+  path: /data/logs/${spring.application.name}
+#  level:
+#    com.hlz : debug
+
+alipay:
+  config:
+    privateKey: MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDJGz89lVthDi+SUPv8nYYZn7LhtPu1QKgBPLdN5Fmvo9ecwfnFyV3uMAnTiVKLFBXsc5M/ST6KdBt1XB72ooKei0fWEjBAUnBhBXOhKka1lVqFXunqFwhjwmKevnKBgmE7eAeFMf/Cx20KeX3ydodqKP/prHkaDp+Yxu78pVKrXbvu4oaStwn53NwqMlm6qomG0TTtZRBrIYEtNMRmwpbyX8FxOg5UBrvb/LEEMqwJ9kpsVBKRw4wHIlXvXwo73dxmvFen1+Nb/MgBpXB/ALnjuhKOE21E0kIP2+qwpy/yAk1EFMd6vnWF5dtSObQu0uTMWzooOrrKVWcYT/dLgJWzAgMBAAECggEAE39yyDO84lIPxq3XYIydPcq/+yYi6VXVdBlA5GppT6Ag/W/JGaYGV1uM+FduC1HtNjmWYyJkz+Ol7eD6l4r2Aw0Z7+VfjDzx7FYs+ckxhdVvK1MidrG4/IMSMLXiQDA14SAoCn/ofif7qHJTBbj8NAy5kxxHuYEFdDiFXzVgKIEH16xriePUANSFZStpFLw8G7S6TS8ij6H7uekthCyi1WidpN5Bnym6PsGUFnK4LliVYcYo5B8FYRhuJ9HPJl4he/ppKTugQp1QNK9gldgOfVnjgmeefCkuuMeEtTMoPnGKdlh11muUpgPLQFHvaQ0vVo8+3auKdc5VuE5eGUd9cQKBgQD3eA8MD+e7abqAvChXLL+OmWYNeMVKubPWWWlbu5u7FCBAbu5y1MyoFGvGNCCRF0jgTDjtOjZSCufhjzw1qbnCqEy/ZE/skmWzqThjAOdHYGJ8biDaNe3sW3ehHeCn71mk5MJn6yp2bQ0a4RmKGourtVM2k1/cIyQ9/xSJzo5AlQKBgQDQCgicqf8s2rq5J+cb7lFxYZR9rccGSWD2LFCMeMifB3I59Xy9r5m/oqr9qs+FguIf0SgsQq9phbQ9aRTugp5DuKNxHd5yJPvueShtvEfY8/n/1TSIbjsAnVYgSbIWKwmjditI9pTrnPqLQUtdnDD3q4PjJtkXfNsfABaBkQcDJwKBgEGnVX6ivZ0IGNXMlXtDQPLpGZ0bXGRNzjtg70XKCS/h0AioJZTLhhxVhp5H+BfmMIxpTHULi5vKjuhVouitxb2x/uKMD3Q5Bshabb4+YB2coaRXZ1ndEukw/xT8ozyKkKLhmf4N8u8GUYK/E5KDJmkAqzoAcV8q55OXF/DTnwPdAoGANug/B6IycBM2rwGiFJQcuLEJcPY5jiY1yiM+CyUhxh8//Z4WEzZSfOqg+JxpcxJtPfqFANGE3HPmc0LVvHGK9dK4iHVarYOnXnRpwDSuPct+0w/hcpStS+c6wQDSWNl5DMR2fiZefaUL108fZhCAOA3znDM3nuRcLN1oE0BEuocCgYA4pUxMIhDCUZ5h57jzPErYfEHww+4oeMTuvJnR8D75uXY2avqmy9o+zU6fRGvhrGY4POhqWBxsAoC5OGYpOxApSMu64FLMiMuWSNXCc7wNstzmt5hDm3krM3Hwmqa+oWYAWWCgd3vVDSeKIF8x3XM/skYT7BFZa72XsUWcmqyWYg==
+    publicKey: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAim0n29HiDAiYmHzLP3J5bvR6TKR3vSdjKK5EVFgX2E9HfO/wVnv2wgj9aBPvpQc49nyZj3CeI83hOiA11wRgkV/H3P0uGzLHUtexhM++Xt16p1mbAMCu5+Z2EbmWCfLGkI6r3wZoGhWFdQtLG5BAshv13D9E96Hs/GZlvJv3NylOu6KkZxqVfnN/AdW/ewUpmD9St8gBLP7lv0WoMkSwf9qIvxZeTYj9RBCb3JeoSvQ28ObOJKRie6FBCg5DtPuBT/lsNeVrOYRN59WaUKpYqDfyE+8QtqQtdDubpkWY/UEnBdwEQ7hue461Ddw8tB4K+D5wpvPBZXg0kEDcXyVAUQIDAQAB
+    APPID: 2018101761682609
+    privateKeyNew: MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCIvLl77+xLfvcWSOYF+Cjm4HjAiN+Pn0D8MkjR8+Q1JFycV0catVZB4+mHY5Qa2x04217eiwQlXuOWIMS5T9NQ2YT2MKEdLJyfCioyuYqNSvVE3a/D5pfW9/93YZgKPQwcfDjyUbC4wy1Sc5T83MXJZRJU9pU6fVTuAg4iuWkWJVXLmkTppwDVi6ls/A6lPXOdBmZHMecSuETnFgT0XerGdhMmdWo39ScC55A3YqU1VqFOE/lfhSRjhZ3BNo39++UHM763J1VbFj1VTROrsD0Je0ibxGXql80i0sOFi+Zk+VVj4pTc4/pwHZchhZ/a9TEyKxw0zZgtvBkrwlgJIEsxAgMBAAECggEAIZZJ8XmTj0/WnbC2X8z/LwcAYjq8v2ic69XmMTw5WBxgaz69BoB4eaLkIA+Dt70OxoKMIRoAoLVYLe5KpEJJY9iqYla7nJDyv9YdW2xb7iz1Zj8WB4bC0VkFdWuRjyJDsVOKIWuTfy7iGRivBhWst7WN9TTEnyNeE0CJ/FmSyI9yEg3fOkzDwfaoZjy5cuS9PkwwUWHgNTGGH+FKD4TYc0FOMEK2dWEOhXUgjXIEB8uoUQPwQuQlQgPCVlILEnZWJRMn2aCEagEmA8kTzTMo4Eg6YEI0p9iD8ZzHcD4wZlEWsZwIhI3tLOyn5ftHYfvmlTWAuU4XpQ4dxFJtTN/EaQKBgQDbw39cXbYf1LZysDJNcIN+WOpo4Zv8Ul6G4inzmV+YDnKrmhOxSQmCJvBI4Ydez3p5WmLRvJQ6cQi5c1hB+G6CoKvuX/OjBpV6+m+cee6YDDP++hWWHxw6klIBZ5GgGVJhuxknqXTwPmdLv0niCJmOi5ajHhV0htDWtADMMAG4OwKBgQCfSJM9JU5CD6XBM/nhhq91zmAjeXX1lHayIjE2liL+uD1k6loLwKbRskZgxTqy65LwUF5IMRqTh6t7F2FHyJdUamPb+AjzJAnvR+RPbvdUmD9jtD9yekPy1jVc/fzPDL/nHfISUvo5QJl/aCmG+C+LWgYEw6m3ZpS0YxRffbG/gwKBgFWEwygPc5L5dLI2rKyD7zeYpEeCG/BZoV0933NjKNcEME1k3OrtcBzMyE6kLMiRVqioqrHRf6EqYWnBYAP0CBUfLyjJAAddxYegsxQiQt26SfWcHhBYNOT6EZ1oTzwM/oj3hPdxMwdWUV4hpz+ldxQIb+s0BsdcuyIB1BmhSNoHAoGANK/e9ETYxAVFAMleiHjypPck2dcda6Q2NuoUeUfkP3lV5YGXU3fgNlDP8saKihBeRFtxNFP5xH8F++tZ5FK3q9adPW+oFjT/jEStgpDkAvlxTlua+RT0UOkGMcJZ02sWNy6ymdkUp8d0fq5HvjtuDpwyjXTjOKUX3ys+2+9J0l0CgYEAvfq1tFw+PHpVnqeVWN4AayJfDU7Gsmvn9o+fi/3nn2XJV47FR5D+CO0YR0VThXY0XVY/aeSMb94PSIJa82KeS0mNcLSOvAZKoADQL+2iw6zPeJhBPm4oJRD+YpnHKe1ATZkp6SQkCGx7is48Fg+ABa2hIiDmQlW8nbmA08nvpmo=
+
+
+wechatpay:
+  config:
+    appid: wxf7d22344f7fac095
+    mch_id: 1518712041
+    App_Secret: huluzhuanhuluzhuanhuluzhuanzhuan
+    packageValue: Sign=WXPay
+
+#新人体验卡的参数 最大比例 最大奖励钱数
+advertise:
+  newuser:
+    newExRewardRate: 0.5f
+    maxExReward: 1f
+
+#mapper实体类字段转化
+mapper:
+  style:
+    normal
+
+i18n:
+    i18n
+
+country:
+    India

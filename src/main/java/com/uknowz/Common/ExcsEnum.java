@@ -1,0 +1,351 @@
+package com.uknowz.Common;
+
+public enum ExcsEnum {
+
+    /**
+     * 系统
+     */
+    OPERATE_OK(200, "DOCASH_OK", "操作成功"),
+    OPERATE_FAIL(201, "OPERATE FAIL", "操作失败"),
+    OPERATE_REPEAT(202, "OPERATE REPEAT", "请勿对同一个数据重复操作"),
+    OPERATE_REQUEST_SPEED_LIMIT(203, "OPERATE_REQUEST_SPEED_LIMIT", "操作过快，请稍后再试"),
+    OPERATE_FIXING(204, "OPERATE_FIXING", "系统维护中"),
+
+    BLACK_LIST(9001, "BLACK_LIST", "您的账号状态异常，无法登录（可能原因：多次违规！)"),
+    USE_ALREADY_LOGOUT(9002, "USE_ALREADY_LOGOUT", "用户已注销"),
+    INTERNAL_NullPointerException(10000, "NullPointerException", "服务端内部异常,请进入<我的-专属客服>联系我们"),
+    INTERNAL_ERROR(10001, "INTERNAL ERROR", "服务端内部异常"),
+    TOKEN_UNVALID(10002, "TOKEN_UNVALID", "token验证失败"),
+    CHECK_PARAM_IS_NULL(10003, "CHECK PARAM NULL", "入参为空"),
+    CHECK_PARAM_IS_ILLEGAL(10004, "CHECK PARAM ILLEGAL", "入参不合法"),
+    CHECK_PARAM_IS_LESS(10005, "CHECK PARAM ILLEGAL", "缺少参数"),
+    DATA_NOT_EXIST(10006, "DEVICE NOT EXIST", "数据不存在"),
+    PLACE_NOT_EXIST(10007, "DEVICE NOT EXIST", "广告位不存在"),
+    LINGQIAN_NOT_ENOUGH(10008, "LINGQIAN NOT ENOUGH", "零钱余额不足"),
+    DOCASH_ERROR(10009, "DOCASH", "提现失败"),
+    MANAGEMENT_CREAT_TIMES_OVER(10010, "MANAGEMENT_CREAT_TIMES_OVER", "管理地址创建超过"),
+    ALIPAY_BIND_ERROR(10011, "ALIPAY_BIND_ERROR", "你已绑定支付宝"),
+    DATA_EXISTS_ERROR(10012, "DATA_EXISTS_ERROR", "数据已存在"),
+    CONFIG_NOT_EXISTS(10013, "CONFIG_NOT_EXISTS", "缺少配置文件"),
+
+
+    SMS_OVER_TIMES_ONE_DAY(10013, "SMS_OVER_TIMES_ONE_DAY", "您今日发送短信次数已用完"),
+    SMS_LESS_THAN_INTERVAL_TIME(10014, "SMS_LESS_THAN_INTERVAL_TIME", "发送短信时间间隔过短"),
+    SMS_PHONE_FORMAT_WRONG(10016, "SMS_PHONE_FORMAT_WRONG", "手机号格式有误"),
+    SMS_WRONG(10017, "SMS_WRONG", "发送短信发生错误"),
+    SMS_CODE_WRONG(10018, "SMS_CODE_WRONG", "验证码有误"),
+    PHONE_BIND_DUPLICATE(10019, "PHONE_BIND_DUPLICATE", "您已绑定手机号，请勿重复绑定"),
+    ALIPAY_NO_EXISTS(10020, "ALIPAY NO EXISTS", "请先绑定支付宝，我的-收款信息-支付宝"),
+    ONE_DEVICE_ONE_USER(10021, "ONE DEVICE ONE USER", "您有其他微信号登陆此设备，请更换，如有疑问请联系客服"),
+    ALIPAY_BIND_EXIST(10022, "ALIPAY BIND EXIST", "支付宝已存在，请更换"),
+    WECHATPAY_NO_EXISTS(10023, "ALIPAY NO EXISTS", "请先绑定微信，我的-收款信息-微信"),
+    DEVICE_EXCEPTION(10024, "DEVICE EXCEPTION", "设备异常"),
+    DEVICE_USER_EXISTS_EXCEPTION(10025, "USRER LOGIN OTHER DEVICE", "你在其他手机登录过，请更换手机登录，如有疑问请联系客服"),
+    PHONE_EXIST(10026, "PHONE_EXIST", "此手机号已绑定到其他账号，请更换手机号"),
+    DANGER_USER(10027, "DANGER_USER", "此等级需要审核"),
+    DANGER_USER_PHONE_VERIFICATION(10028, "DANGER_USER_PHONE_VERIFICATION", "请接收语音验证码"),
+    SMS_WRONG_INNER(10029, "SMS_WRONG_INNER", "短信验证码发生错误"),
+    NEED_GO_NEW_VERSION(10030, "NEED_GO_NEW_VERSION", "您已在新版签到，请安装新版再提现哦~"),
+    WILL_CHANGE_ACCOUNT(10031, "WILL_CHANGE_ACCOUNT", "因微信限制,收款账号将变为【登录的微信账号】,请再次点击进行提现"),
+    NEED_GO_LOTTORY(10032, "NEED_GO_LOTTORY", "领取所有抽奖红包后即可永久开启哦～"),
+    NEED_GO_LOTTORY_NEW(10033, "NEED_GO_LOTTORY", "请先升级到最新版, 完成新人抽奖后即可开启~"),
+    ACTIVITY_CLOSE(10034, "ACTIVITY_CLOSE", "活动已关闭,请升级到最新版本"),
+    NEED_GO_DIALOG_RED_ENVELOP(10035, "NEED_GO_DIALOG_RED_ENVELOP", "领取所有新人红包后, 即可永久开启哦～"),
+    NEED_GO_DIALOG_RED_ENVELOP_NEW(10036, "NEED_GO_DIALOG_RED_ENVELOP_NEW", "请先升级到最新版, 完成新人红包后即可开启~"),
+    LOGIN_WEIXIN_FAIL(10037, "LOGIN_WEIXIN_FAIL", "微信获取失败"),
+    ALIPAY_AUTHORIZE_ERROR(10038, "ALIPAY_AUTHORIZE_ERROR", "支付宝授权失败"),
+    ALIPAY_AUTHORIZE_PLEASE(10039, "ALIPAY_AUTHORIZE_PLEASE", "请先授权支付宝"),
+    WECHATPAY_LIMIT(10040, "WECHATPAY_LIMIT", "因微信限额，大额提现请选择支付宝"),
+
+
+
+
+
+
+    /**
+     * 账户模块
+     */
+    ACCOUNT_CREATE_ERROR(20001, "ACCOUNT CREATE ERROR", "创建用户账户失败"),
+    ACCOUNT_LINGQIAN_UPDATE_ERROR(20002, "ACCOUNT LINGQIAN UPDATE ERROR", "账户零钱更新失败"),
+    ACCOUNT_HULUDOU_UPDATE_ERROR(20003, "ACCOUNT HULUDOU UPDATE ERROR", "账户葫芦豆更新失败"),
+    ACCOUNT_HULUDOU_NOT_ENOUGH(20004, "ACCOUNT HULUDOU NOT ENOUGH", "葫芦豆不足"),
+    ACCOUNT_LINGQIAN_NOT_ENOUGH(20005, "ACCOUNT QINGLIAN NOT ENOUGH", "零钱不足"),
+    ACCOUNT_LINGQIAN2HULUDOU_LESS(20006, "ACCOUNT LINGQIAN2HULUDOU LESS", "至少转0.1元零钱"),
+    ACCOUNT_ONEYUAN_CANTGET(20007, "ACCOUNT_ONEYUAN_CANTGET", "不满足领取1元红包的条件"),
+    ACCOUNT_ALIPAY_FAIL(20008, "ACCOUNT_ALIPAY_FAIL", "支付宝调用失败"),
+    SIGN_UP_TICKET_NOT_ENOUGH(20009, "SIGN_UP_TICKET_NOT_ENOUGH", "打卡券不足"),
+    ACCOUNT_CASH_FOR_ONE_TIME(20010, "ACCOUNT_CASH_FOR_ONE_TIME", "今日已达提现上限,明日再来哦~"),
+    ACCOUNT_CANT_CASH(20011, "ACCOUNT_CANT_CASH", "请点击一元提现标签"),
+    USER_CANT_CASH(20012, "USER_CANT_CASH", "非此版本用户,如有疑问请联系客服"),
+
+
+
+    /**
+     * 答题模块
+     */
+    ANSWER_NEAROPEN(30001, "ANSWER NEAROPEN", "本期即将开奖，请等待下一期报名"),
+    ANSWER_NO_ANSWER(30002, "ANSWER NO ANSWER", "本期你还有未答题目"),
+    ANSWER_NO_RIGHT(30003, "ANSWER NO RIGHT", "回答不正确"),
+
+    /**
+     * 分享
+     */
+    SHARE_REPEAT(40001, "SHARE_REPEAT", "今日已分享过了"),
+    SHARE_SUCCESS_REVIVE(40002, "SHARE SUCCESS REVIVE", "复活成功，请到首页继续答题"),
+    SHARE_NO_REVIVE(40003, "SHARE_NO_REVIVE", "分享成功，但你没有可复活的场次"),
+
+
+    GOODS_BUY_NUMBER_OVER(10015, "GOODS_BUY_NUMBER_OVER", "购买会员卡数量超过20"),
+
+    /**
+     * 会员卡
+     */
+    VIP_CARD_TIME_OVER(50001, " VIP_CARD_TIME_OVER", "该会员卡剩余可买时长不足"),
+    VIP_CARD_APLAY_ERROR(50002, " VIP_CARD_APLAY_ERROR", "请求支付发生错误"),
+    VIP_CARD_APLAY_NOT_SUPPORT_PAY(50003, " VIP_CARD_APLAY_NOT_SUPPORT_PAY", "vip暂不支持购买"),
+
+    /**
+     * 兑换
+     */
+    PRESENT_NO_REMAINTIMES(60001, "PRESENT_NO_REMAINTIMES", "今日抽奖次数已用完"),
+    HULUDOU_ACTIVITY_CLOSE(60002, "HULUDOU_ACTIVITY_CLOSE", "该活动已下线，暂不支持，如有疑问，请联系客服"),
+
+    /**
+     * PC28
+     */
+    PC28_MODELNAME_EXISTS(70001, "PC28 MODELNAME EXISTS", "模式名称已存在，请更换"),
+    PC28_BETTING_CLOSE(70002, "PC28 BETTING CLOSE", "本期投注时间已截止"),
+    PC28_BETTING_NOT_BETTING(70003, "PC28_BETTING_NOT_BETTING", "投注时间已截止，请更换一期"),
+    PC28_SIGN_EXISTS(70004, "PC28 SIGN EXISTS", "今日已领取"),
+    PC28_RECEIVE_NULL(70005, "PC28 RECEIVE NULL", "无可领取葫芦豆"),
+    PC28_WARNMORE(70006, "PC28 WARNMORE", "你今日在线时间过长，注意休息哦，请明日再来"),
+
+    /**
+     * Crazy28
+     */
+    Crazy28_MODELNAME_EXISTS(71001, "Crazy28 MODELNAME EXISTS", "模式名称已存在，请更换"),
+    Crazy28_BETTING_CLOSE(71002, "Crazy28 BETTING CLOSE", "本期投注时间已截止"),
+    Crazy28_BETTING_NOT_BETTING(71003, "Crazy28_BETTING_NOT_BETTING", "投注时间已截止，请更换一期"),
+
+    /**
+     * 广告
+     */
+    AD_FIRST_STEP_ALREADY_RECEIVE(80001, "AD_FIRST_STEP_ALREADY_RECEIVE", "该任务已经领取，请勿重复操作"),
+    AD_REMAINDER_NUM_NOT_ENOUGH(80002, "AD_REMAINDER_NUM_NOT_ENOUGH", "该任务剩余数量不足，无法领取"),
+    AD_FIRST_STEP_NO_RECEIVE(80003, "AD_FIRST_STEP_NO_RECEIVE", "该任务未领取过，请先领取该任务"),
+    AD_HAVE_BEEN_SUBMIT(80003, "AD_HAVE_BEEN_SUBMIT", "该任务已提交审核，正在审核中/审核已通过，请勿重复提交"),
+    AD_NOT_ACHIEVE(80004, "AD_NOT_ACHIEVE", "你暂为达到此等级要求"),
+    AD_THIRDREURN_ACHIEVE(80005, "AD_NOT_ACHIEVE", ""),
+    AD_STEP_NOT_EXIST(80006, "AD_STEP_NOT_EXIST", "广告步骤不存在"),
+    AD_SUBMIT_FILEID_ERROR(80007, "AD_SUBMIT_FILEID_ERROR", "很遗憾，未知问题导致图片发生错误，请重新上传"),
+    AD_ALREADY_DONE(80008, "AD_ALREADY_DONE", "很遗憾，该广告内容您已领取过，无法领取(T﹏T)"),
+    AD_ACCOUNTID_EXISIT(80009, "AD_ACCOUNTID_EXISIT", "账号信息重复（如：手机号、昵称等），请更换账号"),
+    AD_ACCOUNTID_PHONE_EXISIT(80010, "AD_ACCOUNTID_PHONE_EXISIT", "该手机号已被绑定，请更换手机号"),
+    AD_UNSALE(80011, "AD_UNSALE", "该广告下架了"),//专用错误码
+    AD_MOBILE_CANT_PARTEEN(80012, "AD_MOBILE_CANT_PARTEEN", "填写的手机号格式有问题"),
+    AD_NEED_MORE_TIME(80013, "AD_NEED_MORE_TIME", "体验时长不足，请按要求试玩哦～"),
+    AD_ALREADY_WRONG(80014, "AD_ALREADY_WRONG", "很遗憾无法答题，今日答题机会用完了呢(T﹏T)"),
+    AD_DATI_WRONG(80015, "AD_DATI_WRONG", "很遗憾，答错了"),
+    AD_STEP_ALREADY_DONE(80016,"AD_STEP_ALREADY_DONE","本步骤已经完成"),
+    AD_DONT_NEED_GIVEUP(80017,"AD_DONT_NEED_GIVEUP","未领取，无需放弃"),
+    AD_CANT_NEED_GIVEUP(80018,"AD_CANT_NEED_GIVEUP","任务参与中，无法放弃"),
+    AD_URL_PARSE_ERROR(80019,"AD_URL_PARSE_ERROR","广告url解析出错，如有疑问请联系客服"),
+    AD_USER_NOT_EXIST(80020,"AD_USER_NOT_EXIST","adUser不存在"),
+    AD_VOUCHER_FAILED(80021,"AD_VOUCHER_FAILED","奖励卡操作失败"),
+    AD_CONNECTION_TIME_OUT(80022,"AD_CONNECTION_TIME_OUT","请求商家数据超时,不要着急,稍后再试"),
+    AD_ALREADY_OFFSALE(80023, "AD_ALREADY_OFFSALE", "广告已到期,无法参与,请退回"),
+    AD_CANT_GET(80024, "AD_CANT_GET", "正在处理中,请耐心等待~"),
+    AD_USER_EXIST(80025,"AD_USER_EXIST","用户已经上榜(本档),请仔细核对"),
+    AD_NO_PLACE(80026,"AD_NO_PLACE","(本档)冲顶已满额无法冲顶,请仔细核对"),
+    AD_CONCURRENT(80027,"AD_CONCURRENT","有人和你操作同一条数据，请稍后再试"),
+    AD_USER_NEED_CONFIRM(80028,"AD_USER_NEED_CONFIRM","用户数据不存在，请仔细核对"),
+    AD_ACCOUNTID_GET(80029, "AD_ACCOUNTID_GET", "该游戏账号已领取过此任务奖励，不可重复领取"),
+    AD_CPA_ACCOUNTID_GET(80030, "AD_CPA_ACCOUNTID_GET", "该试玩账号已领取过此任务奖励，不可重复领取"),
+    AD_CPA_TIME_ISNOT_ENOUGH(80031, "AD_CPA_TIME_ISNOT_ENOUGH", "今天的任务完成啦,余下任务请明天再来哦"),
+    AD_CPL_NOTSUPPORT_ANDROID10(80032, "AD_CPL_NOTSUPPORT_ANDROID10", "此游戏暂不支持安卓10用户"),
+    AD_CPL_CANT_GET_DEVICE(80033, "AD_CPL_CANT_GET_DEVICE", "获取不到您的设备信息~"),
+    AD_THIRD_RETURN_PARAM_WRONG(80034, "AD_THIRD_RETURN_PARAM_WRONG", "商家返回参数有误~"),
+    AD_THIRD_PARAM_CONFIG_WRONG(80035, "AD_THIRD_PARAM_CONFIG_WRONG", "配置url的商家参数有误"),
+    AD_THIRD_URL_PARAM_CONFIG_WRONG(80036, "AD_THIRD_URL_PARAM_CONFIG_WRONG", "商家页面配置参数有误"),
+    FILE_COUNT_TOO_MANY(80037, "FILE_COUNT_TOO_MANY", "图片数量过多"),
+
+
+    /**
+     * 签到
+     */
+    SIGN_OK(90001, "SIGN OK", "签到成功"),
+    SIGN_EXISTS(90002, "SIGN EXISTS", "今日已签到"),
+    SIGN_NOT_EXISTS(90002, "SIGN NOT EXISTS", "请先进行签到"),
+    SIGN_GIVE_UP(90002, "SIGN_GIVE_UP", "已放弃无法签到"),
+    SIGN_CANT_SIGN(90003, "SIGN_CANT_SIGN", "请刷新重试!"),//转盘签到
+    SIGN_GO_TO_FIRST_DAY(90004, "SIGN_CANT_SIGN", "请先点击第一天签到哦!"),
+
+
+
+    /**
+     * 新人任务 日常任务
+     */
+    TASK_USER_EXISTS(90001, "TASK USER EXISTS", "已领取过此任务奖励"),
+    TASK_USER_NOT_COMPLETE(90002, "TASK USER NOT COMPLETE", "你还没完成此任务，加油哟"),
+    TASK_USER_ALREADY_GET(90003, "TASK_USER_ALREADY_GET", "任务奖励已经领取过了~"),
+
+    /**
+     * 提现
+     */
+    CASH_NO_PHONE(100001, "PRESENT_NO_REMAINTIMES", "请先绑定手机，钱包-手机号"),
+    ALREADY_DO_CASH(100002, "ALREADY_DO_CASH", "新人提现任务已参与过，无法重复参与"),
+
+    /**
+     * 气泡
+     */
+    QIPAO_ISNOT_FOR_YOU(110001, "QIPAO_ISNOT_FOR_YOU", "好像不是你的诶~"),
+    QIPAO_ALREADY_RECEIVE(110001, "AD_FIRST_STEP_ALREADY_RECEIVE", "没有抢到，已被采集~"),
+    QIPAO_ALREADY_RECEIVE_BY_OTHER(110001, "AD_FIRST_STEP_ALREADY_RECEIVE", "很遗憾，没有抢到~"),
+    QIPAO_FOR_ZERO(110001, "QIPAO_FOR_ZERO", "空~"),
+    QIPAO_BEFORE_TASK(110001, "QIPAO_BEFORE_TASK", "【微信/QQ加关注】任务审核通过后，再次点击此钻石即可得1元哦～"),
+    QIPAO_VIDEO_ALREADY_USE(110002, "QIPAO_VIDEO_ALREADY_USE", "领取该钻石的看视频任务已经做过啦~"),
+    QIPAO_FIRST(110003, "QIPAO_FIRST", "请先领取钻石哦"),
+
+
+    /**
+     * 红包
+     */
+    HONGBAO_NO_VALID(120001, " HONGBAO NO VALID", "没有未拆红包"),
+    HONGBAO_THREEGO_END(120002, " HONGBAO NO VALID", "红包三人行活动已截止"),
+
+
+    /**
+     * 打卡活动
+     */
+    SIGN_UP_NOT_JOIN(13001,"SIGN_UP_NOT_JOIN","未参与当期活动"),
+    SIGN_UP_TIME_ERROR(13002,"SIGN_UP_TIME_ERROR","不在打卡时间内"),
+    SIGN_UP_IS_EXIST(13002,"SIGN_UP_IS_EXIST","已经参与，不能重复参与"),
+
+
+    /**
+     * 邀请额外送活动
+     */
+    INVINT_ACTIVITY_TIME_OVER(14001,"INVINT_ACTIVITY_TIME_OVER","当期活动已经结束,新一期还未开启,请回退"),
+
+    /**
+     * 抽奖
+     */
+    THANK_YOU_FOR_PARTICIPATION(15001,"THANK_YOU_FOR_PARTICIPATION","很遗憾没有抽中"),
+
+
+    /**
+     * 每日红包
+     */
+    REDPACKAGE_CANT_OPEN(16001,"REDPACKAGE_CANT_OPEN","请先完成当前红包再开启明日红包"),
+    REDPACKAGE_MUST_OPEN_BEFORE(16002,"REDPACKAGE_MUST_OPEN_BEFORE","请先开启红包"),
+    REDPACKAGE_ALREADY_UNLOCK(16003,"REDPACKAGE_ALREADY_UNLOCK","本红包已经解锁过请勿重复解锁"),
+    REDPACKAGE_CANT_UNLOCK_TIME(16004,"REDPACKAGE_CANT_UNLOCK_TIME","解锁时间还没到哦~"),
+    REDPACKAGE_NEED_DO_TASK(16005,"REDPACKAGE_NEED_DO_TASK","还不行哦~"),
+    REDPACKAGE_CANT_OPERATE(16006,"REDPACKAGE_CANT_OPERATE","请稍后再试"),
+    REDPACKAGE_ALREADY_RECEIVE(16007,"REDPACKAGE_ALREADY_RECEIVE","不能重复领取哦"),
+    REDPACKAGE_TASK_STATUS_WRONG(16008,"REDPACKAGE_TASK_STATUS_WRONG","任务状态有误, 无法领取"),
+    REDPACKAGE_CATN_IN(16009,"REDPACKAGE_CATN_IN","您的机会已经用完"),
+
+
+    /**
+     * 赏金红包
+     */
+    CANT_DO_NOSIGN(16001,"CANT_DO_NOSIGN","请先完成签到哦"),
+    CANT_DO_ALREADY_REWARD(16002,"CANT_DO_ALREADY_REWARD","奖励已经领取,无法发放"),
+    CANT_DO_STATUS_WRONG(16003,"CANT_DO_STATUS_WRONG","状态有误,无法发放"),
+    CANT_DO_NO_OPEN(16004,"CANT_DO_NO_OPEN","请先开启红包哟"),
+    CANT_DO_EXPIRE(16005,"CANT_DO_EXPIRE","当前赏金红包已经过期"),
+    CANT_DO_EX_LESS(16006,"CANT_DO_EXPIRE","还有任务没有完成"),
+    CANT_DO_ALREADY_OPEN(16007,"CANT_DO_ALREADY_OPEN","不要重复开启赏金红包哦"),
+
+    /**
+     * 新人抽奖
+     */
+    CAN_NOT_LOTTERY(17001,"CAN_NOT_LOTTERY","很抱歉，您暂时不能参与该活动～"),
+    COMPLETE_LOTTERY(17002,"COMPLETE_LOTTERY","抽奖完成，已开启一元提现和每日红包～"),
+    NOT_COMPLETE_LOTTERY(17003,"NOT_COMPLETE_LOTTERY","完成要求得抽奖机会，中奖率100%～"),
+
+
+    /**
+     * 新年红包活动
+     */
+    CAN_NOT_NEWYEAR_REDENVELOPE(18001,"CAN_NOT_NEWYEA_RREDENVELOPE","很抱歉，您暂时不能参与该活动～"),
+    ALREADY_GET_NEWYEAR_REDENVELOPE(18002,"ALREADY_GET_NEWYEA_RREDENVELOPE","您已经领取过本场的红包，请下场再来"),
+    GRAB_NO_NEWYEAR_REDENVELOPE(18003,"GRAB_NO_NEWYEA_RREDENVELOPE","与红包擦身而过～"),
+    HAVE_NO_NEWYEAR_REDENVELOPE(18004,"HAVE_NO_NEWYEAR_REDENVELOPE","本场红包已被抢完～"),
+    DO_NOT_GET_NEWYEAR_REDENVELOPE(18005,"DO_NOT_GET_NEWYEAR_REDENVELOPE","您没有抢到红包"),// 领取到余额or到微信的时候会抛
+    NEWYEAR_REDENVELOPE_PARSE_EXCEPTION(18006,"NEWYEAR_REDENVELOPE_PARSE_EXCEPTION","新年红包服务端内部错误"),
+
+
+    /**
+     * 对话框红包(新人红包)
+     */
+    DIALOG_RED_ENVELOP_TASK_STATUS_WRONG(19001,"DIALOG_RED_ENVELOP_TASK_STATUS_WRONG","任务状态有误, 请退出重试"),
+    DIALOG_RED_ENVELOP_ALREADY_DONE(19002,"DIALOG_RED_ENVELOP_AREADY_DONE","红包次数已用完, 无法领奖"),
+    DIALOG_RED_ENVELOP_TASK_NOT_ENOUGH(19003,"DIALOG_RED_ENVELOP_TASK_NOT_ENOUGH","任务数量不足, 无法领奖"),
+
+    /**
+     * 欢乐拼团
+     */
+    ALREADY_JOIN_SNATCH(26001,"ALREADY_JOIN_SNATCH","已经参与拼团，不可再次参与"),
+    NOT_ENOUGH_LINGQIAN(26002,"NOT_ENOUGH_LINGQIAN","零钱不足"),
+    SNATCH_TODAY_MAX(26003,"SNATCH_TODAY_MAX","今日已达参与上限"),
+    CURRENT_SNATCH_FULL(26004,"CURRENT_SNATCH_FULL","当前团已满，请刷新重试"),
+    SNATCH_ERROR(26005,"SNATCH_ERROR","欢乐拼团错误"),
+    SNATCH_ALREADY_OPENAWARD(26006,"SNATCH_ALREADY_OPENAWARD","该团已经开奖过"),
+    USER_COUNT_NOT_ENOUGH(26007,"USER_COUNT_NOT_ENOUGH","人数不足不能开奖"),
+    SNATCH_NOT_OPENAWARD(26008,"SNATCH_NOT_OPENAWARD","没开奖不能发奖"),
+    SNATCH_ALREADY_REWARD(26009,"SNATCH_ALREADY_REWARD","奖励已发放过"),
+    CREATE_LUCKYNUM_ERROR(26010,"CREATE_LUCKYNUM_ERROR","生成幸运码失败"),
+    CANOT_JOIN_SNATCH(26011,"CANOT_JOIN_SNATCH","目前不可参与"),
+    CANOT_RECEIVE_REWARD(26012,"CANOT_RECEIVE_REWARD","没参与过不可领奖"),
+    HAVE_REWARD(26013,"HAVE_REWARD","还有没领取的奖励不能参与新一期"),
+    HAVE_NO_REWARD(26014,"HAVE_NO_REWARD","没有可领取的奖励"),
+    ACTIVITY_END(26015,"ACTIVITY_END","活动已结束"),
+
+
+    /**
+     * 闪验
+     */
+    CHECK_PHONE_ERROR(27001, "CHECK_PHONE_ERROR", "手机号绑定失败，请重试，如有疑问，请联系客服"),
+
+    /**
+     * 看视频抢支付宝红包
+     */
+    HAVE_NO_ALIPAYHONGBAO(28001, "HAVE_NO_ALIPAYHONGBAO", "今日红包被抢完啦，明天再来抢"),
+    INTERVAL_ALIPAYHONGBAO(28002, "INTERVAL_ALIPAYHONGBAO", "当前抢红包的人太多了，请1分钟后再来抢喔"),
+    ALIPAYHONGBAO_ERROR(28003, "ALIPAYHONGBAO_ERROR", "抢支付宝红包错误"),
+
+    //该29了
+    ;
+
+
+    private int code;
+
+    private String desc;
+
+    private String message;
+
+    ExcsEnum(int code, String desc, String message) {
+        this.code = code;
+        this.desc = desc;
+        this.message = message;
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+
+    public String toString() {
+        return code + ": " + desc + ": " + message;
+    }
+}
