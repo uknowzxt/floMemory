@@ -20,19 +20,16 @@ import java.util.List;
 public class MemorySchedule {
 
     @Autowired
-    private FeishuLib feishuLib;
-
-    @Autowired
     private MemoryService memoryService;
 
-    private String[] candidates = {"张晓婷","张阅"};
-    private LocalDate startDate = LocalDate.of(2023, 6, 26); // Replace with your own start date
+    private String[] candidates = {"张阅","张晓婷"};
+    private LocalDate startDate = LocalDate.of(2023, 10, 5); // Replace with your own start date
 
 
     //工作辅助
     //每天九点半推送今天值班
 //    @Scheduled(cron = "0 0/1 * * * ?")
-    @Scheduled(cron = "0 40 9 * * ?")
+    @Scheduled(cron = "0 30 10 * * ?")
     public void helpForJob() throws Exception {
 
 
@@ -64,25 +61,19 @@ public class MemorySchedule {
     //1分钟轮询
     @Scheduled(cron = "0 0/1 * * * ?")
     public void memoryReview() throws Exception {
-        try {
-            if (start) {
-                start = false;
-                Client client = feishuLib.getClient();
+        if (start) {
+            start = false;
+            try {
                 List<Task> tasks = memoryService.obterTaskList();
-                for (Task task : tasks) {
-//                ImSample.sendImageMsg(client, task.getOpenId(), task.getPic());
-                    String s = ImSample.sendInteractiveMonitorMsg(client, task.getOpenId(), task.getPic(), task.getTitle(), task.getContent(), "复习阶段:" + (task.getStage() + 1));
-                    int i = memoryService.updateTaskSendMessage(s, task.getTaskId());
-                }
+                memoryService.sendReviewCards(tasks);
+            }catch (Exception e){
+                e.printStackTrace();
+            }finally {
+                start = true;
             }
-        }catch (Exception e){
-
-        }finally {
-            start = true;
         }
 
     }
-
 
     //随机漫游 每天一次
     private boolean randomReviewStart = true;
@@ -90,25 +81,29 @@ public class MemorySchedule {
     public void randomReview() throws Exception {
         if (randomReviewStart) {
             randomReviewStart = false;
-            memoryService.randomMemory("ou_5beb69daf448702c6a98adf0a568dfc5");
-            randomReviewStart = true;
-        }
+            try {
+                memoryService.randomMemory("ou_5beb69daf448702c6a98adf0a568dfc5");
+            }catch (Exception e){
+                e.printStackTrace();
+            }finally {
+                randomReviewStart = true;
+            }    }
 
     }
 
-    //4小时轮询,如果有发送提示的卡片很久没有得到回应, 再次提醒
-    @Scheduled(cron = "0 0 7-22/4 * * *")
+    //如果有发送提示的卡片12小时没有得到回应, 再次提醒
+    @Scheduled(cron = "0 0/1 * * * ?")
     public void memoryReviewAlert() throws Exception {
         if (start) {
             start = false;
-            Client client = feishuLib.getClient();
-            List<Task> tasks = memoryService.obterTaskAlertList();
-            for(Task task: tasks){
-//                ImSample.sendImageMsg(client, task.getOpenId(), task.getPic());
-                String s = ImSample.sendInteractiveMonitorMsg(client, task.getOpenId(),task.getPic(),task.getTitle(),task.getContent(),"本内容超12小时未完成复习,尽快完成哦(阶段:" + (task.getStage() + 1) +")");
-                int i = memoryService.updateTaskSendMessage(s, task.getTaskId());
+            try {
+                List<Task> tasks = memoryService.obterTaskAlertList();
+                memoryService.sendReviewCards(tasks);
+            }catch (Exception e){
+                e.printStackTrace();
+            }finally {
+                start = true;
             }
-            start = true;
         }
 
     }

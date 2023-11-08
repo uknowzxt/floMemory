@@ -29,4 +29,5 @@ public class Task {
 
     private Date createTime;//创建时间
     private Date reviewTime;//下次复习时间(通过这个查找用户需要复习的东西)
+    private Date sendTime;//通过这个计算是否需要提醒
 }

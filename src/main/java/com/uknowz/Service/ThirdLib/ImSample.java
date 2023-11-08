@@ -303,7 +303,7 @@ public class ImSample {
         //图片+图片标题
         MessageCardImage image = MessageCardImage.newBuilder()
                 .alt(MessageCardPlainText.newBuilder()
-                        .content("")
+                        .content(content)
                         .build())
 //                .imgKey("img_v2_8b2ebeaf-c97c-411d-a4dc-4323e8cba10g")
                 .imgKey(pic)

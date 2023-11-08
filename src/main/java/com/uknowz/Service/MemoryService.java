@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
+import com.lark.oapi.Client;
 import com.uknowz.Common.BizResult;
 import com.uknowz.Dao.TaskDao;
 import com.uknowz.Pojo.DO.Memory.Task;
@@ -18,13 +19,11 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class MemoryService {
@@ -41,6 +40,14 @@ public class MemoryService {
     //定义不同阶段复习时间数组,单位为s
     //分别是在5分钟后重复一遍，20分钟后再重复一遍，1小时后，9小时后，1天后，2天后，5天后，8天后，14天后复习
     int[] SCHEDULE_TIME = {5 * oneMin, 20 * oneMin, oneHour, 9 * oneHour, oneDay, 2 * oneDay, 5 * oneDay, 8 * oneDay, 14 * oneDay};
+
+
+    //每日复习最大数量(9stage以内不受控制)
+    Long reviewMaxNumOneDay = 11l;
+
+
+    //10level是否开启复习
+    Boolean closeHighStage = true;
 
     @Autowired
     private TaskDao taskDao;
@@ -136,13 +143,13 @@ public class MemoryService {
         task.setStage(task.getStage() + 1);
         //设置下次复习时间
         setReviewTime(task);
-        return taskDao.updateByPrimaryKeySelective(task);
+        return updateTask(task);
     }
 
     //掌握完成
     private int taskDone(Task task) {
         task.setDone(1);
-        return taskDao.updateByPrimaryKeySelective(task);
+        return updateTask(task);
     }
 
 
@@ -152,13 +159,13 @@ public class MemoryService {
         Date date = new Date();
         date.setTime(date.getTime() + 1000 * nextDuration);
 
-        //如果复习时间在0点~7点之间,统一在7点复习. 如果复习时间在其他时间,并且在大尺度时间后复习范畴, 统一10点推送复习内容
+        //如果复习时间在0点~7点之间,统一在7点复习. 如果复习时间在其他时间,并且在大尺度时间后复习范畴, 统一9:00点推送复习内容
         LocalDateTime later = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
         if (later.getHour() >= 0 && later.getHour() < 7) {
             later = later.withHour(7).withMinute(0).withSecond(0);
         } else {
-            if(task.getStage() >= 5) {
-                later = later.withHour(10).withMinute(0).withSecond(0);
+            if (task.getStage() >= 5) {
+                later = later.withHour(9).withMinute(0).withSecond(0);
             }
         }
         Date result = Date.from(later.atZone(ZoneId.systemDefault()).toInstant());
@@ -175,9 +182,13 @@ public class MemoryService {
         Example.Criteria criteria = example.createCriteria();
         criteria.andEqualTo("done", 0);
         criteria.andLessThanOrEqualTo("reviewTime", now);
-        criteria.andNotEqualTo("pic","");
         criteria.andEqualTo("sendMessageId", "");
+        criteria.andNotEqualTo("pic", "");
+        if (closeHighStage){
+            criteria.andLessThan("stage",9);
+        }
         List<Task> tasks = taskDao.selectByExample(example);
+
         return tasks;
     }
 
@@ -189,7 +200,7 @@ public class MemoryService {
         example.setOrderByClause("createTime asc");
         Example.Criteria criteria = example.createCriteria();
         criteria.andEqualTo("done", 0);
-        criteria.andLessThanOrEqualTo("reviewTime", DateUtil.offsetHour(now,-12));
+        criteria.andLessThanOrEqualTo("sendTime", DateUtil.offsetHour(now, -12));
         criteria.andNotEqualTo("sendMessageId", "");
         List<Task> tasks = taskDao.selectByExample(example);
         return tasks;
@@ -257,10 +268,11 @@ public class MemoryService {
 
 
     public int updateTaskSendMessage(String sendMessageId, Integer taskId) {
-        return taskDao.updateByPrimaryKeySelective(new Task() {{
-            setSendMessageId(sendMessageId);
-            setTaskId(taskId);
-        }});
+        Task task = new Task();
+        task.setSendMessageId(sendMessageId);
+        task.setTaskId(taskId);
+        task.setSendTime(new Date());
+        return updateTask(task);
     }
 
 
@@ -292,18 +304,17 @@ public class MemoryService {
     }
 
     /**
-     *
-     * @param text 搜索tag内容
+     * @param text   搜索tag内容
      * @param openId 发送对象
-     * @param type 0=查找随笔记录 1=查找记忆图片记录
+     * @param type   0=查找随笔记录 1=查找记忆图片记录
      */
     public void selectTaskByTags(String text, String openId, Integer type) {
         Example example = new Example(Task.class);
         Example.Criteria criteria = example.createCriteria();
         criteria.andEqualTo("openId", openId);
-        if(type ==0){
+        if (type == 0) {
             criteria.andEqualTo("pic", "");
-        }else {
+        } else {
             criteria.andNotEqualTo("pic", "");
         }
 
@@ -318,17 +329,17 @@ public class MemoryService {
         for (String tag : s) {
             if (!StringUtils.isEmpty(tag)) {
                 needSearch = true;
-                if (count ==0) {
+                if (count == 0) {
                     condition.append("tags LIKE '%" + tag + "%'");
-                }else {
+                } else {
                     condition.append("and tags LIKE '%" + tag + "%'");
                 }
-                count ++ ;
+                count++;
             }
         }
 
 
-        criteria.andCondition("(title = '" + s[0] + "'" + (StringUtils.isEmpty(condition.toString())? "":"or(" +condition.toString() + ")") + ")");
+        criteria.andCondition("(title = '" + s[0] + "'" + (StringUtils.isEmpty(condition.toString()) ? "" : "or(" + condition.toString() + ")") + ")");
         example.orderBy("createTime").desc();
 
         if (!needSearch) {
@@ -342,17 +353,17 @@ public class MemoryService {
             return;
         }
         List<String> texts = tasks.stream().map(task -> task.getTaskId() + ": " + task.getContent()).collect(Collectors.toList());
-        texts.add(0, "【查到结果,"+ "共" + texts.size() + "条,记忆图片查询可以回复对应id查看详情】~" );
+        texts.add(0, "【查到结果," + "共" + texts.size() + "条,记忆图片查询可以回复对应id查看详情】~");
         ImSample.sendTextMsg(FeishuLib.getClient(), openId, openId, "小可爱", false, texts);
     }
 
     public void sendTaskPicToUser(int taskId, String openId) throws Exception {
         Task task = taskDao.selectByPrimaryKey(taskId);
-        if(task == null){
+        if (task == null) {
             ImSample.sendTextMsg(FeishuLib.getClient(), openId, openId, "小可爱", false, "没有查询到对应记忆图片");
             return;
         }
-        ImSample.sendMonitorCardMsg(FeishuLib.getClient(), task.getOpenId(),task.getPic(),task.getTitle(),taskId + ":" +task.getContent(),"(阶段:" + (task.getStage() + 1) +")内容如下,对此卡片的回复无效");
+        ImSample.sendMonitorCardMsg(FeishuLib.getClient(), task.getOpenId(), task.getPic(), task.getTitle(), taskId + ":" + task.getContent(), "(阶段:" + (task.getStage() + 1) + ")内容如下,对此卡片的回复无效");
     }
 
     public List<Task> obterRandomTaskList(String openId) {
@@ -382,5 +393,97 @@ public class MemoryService {
         }
     }
 
+
+    //艾宾浩斯体系, 所有应该复习的内容全部重新推送
+    public void clearMessageIds(String openId) throws Exception {
+        Example example = new Example(Task.class);
+        example.setOrderByClause("createTime asc");
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andNotEqualTo("sendMessageId", "");
+        criteria.andEqualTo("openId", openId);
+        criteria.andNotEqualTo("pic", "");
+        if (closeHighStage){
+            criteria.andLessThan("stage",9);
+        }
+        List<Task> tasks = taskDao.selectByExample(example);
+        sendReviewCards(tasks);
+    }
+
+    /**
+     * 艾宾浩斯体系之发送复习卡片, 发送前判断今日已发送多少张卡片, 若卡片发送过多的情况下, stage大于等于9的卡片今日不发送, 明日会自动被发送的.
+     *
+     * @param tasks
+     * @throws Exception
+     */
+    public void sendReviewCards(List<Task> tasks) throws Exception {
+        HashMap<String,  Set<Integer>> storeOpenIdAndNum = new HashMap<>();
+
+        Client client = feishuLib.getClient();
+        for (Task task : tasks) {
+            //所有今日任务
+            Set<Integer> taskIdsToday = storeOpenIdAndNum.get(task.getOpenId());
+            if (taskIdsToday == null) {
+                Example example = new Example(Task.class);
+                Example.Criteria criteria = example.createCriteria();
+                criteria.andGreaterThan("sendTime", DateUtil.beginOfDay(new Date()));
+                criteria.andLessThan("sendTime", DateUtil.endOfDay(new Date()));
+                criteria.andEqualTo("openId", task.getOpenId());
+                criteria.andNotEqualTo("pic", "");
+                List<Task> tasksToday = taskDao.selectByExample(example);
+
+
+                Example example2 = new Example(Task.class);
+                Example.Criteria criteria2 = example2.createCriteria();
+//                criteria2.andGreaterThan("reviewTime", DateUtil.beginOfDay(new Date()));
+                criteria2.andLessThan("reviewTime", DateUtil.endOfDay(new Date()));
+                criteria2.andEqualTo("openId", task.getOpenId());
+                criteria2.andNotEqualTo("pic", "");
+                if (closeHighStage){
+                    criteria.andLessThan("stage",9);
+                }
+                List<Task> tasksToday2 = taskDao.selectByExample(example2);
+
+                // 使用Stream API合并并去重
+                List<Task> collect = Stream.concat(tasksToday.stream(), tasksToday2.stream())
+                        .distinct()
+                        .collect(Collectors.toList());
+
+
+                //取出今日可展示的任务
+                // 取出所有 stage <= 9 的任务
+                List<Task> selectedTasks = collect.stream()
+                        .filter(a -> a.getStage() < 9)
+                        .collect(Collectors.toList());
+
+                // 如果取出的数量小于15，再取出 stage > 9 的任务以补齐
+                if (selectedTasks.size() < reviewMaxNumOneDay) {
+                    List<Task> remainingTasks = collect.stream()
+                            .filter(b -> b.getStage() >= 9)
+                            .limit(reviewMaxNumOneDay - selectedTasks.size())
+                            .collect(Collectors.toList());
+                    selectedTasks.addAll(remainingTasks);
+                }
+
+                Set<Integer> taskIds = selectedTasks.stream()
+                        .map(Task::getTaskId)
+                        .collect(Collectors.toSet());
+
+                taskIdsToday = taskIds;
+                storeOpenIdAndNum.put(task.getOpenId(),taskIds);
+            }
+
+            //今天学不上了 明天再学
+            if (!taskIdsToday.contains(task.getTaskId())) {
+                task.setReviewTime(DateUtil.offsetDay(task.getReviewTime(), 1));//明天再学
+                task.setSendMessageId("");
+                updateTask(task);
+                continue;
+            }
+
+            //正常发送
+            String s = ImSample.sendInteractiveMonitorMsg(client, task.getOpenId(), task.getPic(), task.getTitle(), task.getContent(), "复习阶段:" + (task.getStage() + 1));
+            int i = updateTaskSendMessage(s, task.getTaskId());
+        }
+    }
 
 }

@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,6 +41,8 @@ public class FeishuEventController {
 
     @Autowired
     private MemoryService memoryService;
+
+    private Map<String,Long> storeSth= new ConcurrentHashMap<String,Long>();
 
     private List<String> helpSimpleTips = new ArrayList<String>(){{
         add("【使用指南】");
@@ -163,6 +166,10 @@ public class FeishuEventController {
                                 ImSample.sendTextMsg(feishuLib.getClient(), openId,"","",false,helpTips);
                             }else if(NumberUtil.isNumber(text) && NumberUtil.isInteger(text)){//回复序号 查找对应记忆图片返回用户
                                 memoryService.sendTaskPicToUser(Integer.parseInt(text), openId);
+                            }else if ("重发".equals(text)){//把所有目前待学习卡片重新推送
+                                if(isRequestAllowed("resendTime")) {
+                                    memoryService.clearMessageIds(openId);
+                                }
                             }else {
                                 ImSample.sendTextMsg(feishuLib.getClient(), openId,"","",false,helpSimpleTips);
                             }
@@ -373,4 +380,30 @@ public class FeishuEventController {
         customResponse.setHeaders(headers);
         return customResponse;
     }
+
+    //是否允许执行业务
+    public boolean isRequestAllowed(String key) {
+        long currentTime = System.currentTimeMillis();
+
+        // 检查是否存在 key，并获取其对应的时间戳
+        Long storedTime = storeSth.get(key);
+
+        if (storedTime == null) {
+            // 如果 key 不存在，允许请求，并将当前时间存储为时间戳
+            storeSth.put(key, currentTime);
+            return true;
+        } else {
+            // 如果 key 存在，检查时间是否超过1分钟
+            long elapsedTime = currentTime - storedTime;
+            if (elapsedTime >= 60000 * 60 *24) { // 1分钟 = 60,000毫秒
+                // 如果超过1分钟，允许请求，并更新时间戳
+                storeSth.put(key, currentTime);
+                return true;
+            } else {
+                // 如果未超过1分钟，不允许请求
+                return false;
+            }
+        }
+    }
+
 }
