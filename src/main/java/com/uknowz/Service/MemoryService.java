@@ -17,8 +17,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import tk.mybatis.mapper.entity.Example;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -73,7 +77,7 @@ public class MemoryService {
         task.setUnionId(unionId);
         task.setDone(1);
         task.setStage(0);
-
+        task.setMsgType(0);
         //获取回忆漫步权重最大值 最后计入的在权重上最后展示
         Example example = new Example(Task.class);
         example.selectProperties("showWeight");
@@ -155,6 +159,9 @@ public class MemoryService {
 
     //获取下次复习时间
     private void setReviewTime(Task task) {
+        if (task.getMsgType() !=  null && task.getMsgType() == 2){
+            return; //提醒时间在提醒分支已经处理好了
+        }
         long nextDuration = getNextDuration(task.getStage());
         Date date = new Date();
         date.setTime(date.getTime() + 1000 * nextDuration);
@@ -181,6 +188,7 @@ public class MemoryService {
         example.setOrderByClause("createTime asc");
         Example.Criteria criteria = example.createCriteria();
         criteria.andEqualTo("done", 0);
+        criteria.andEqualTo("msgType", 1);
         criteria.andLessThanOrEqualTo("reviewTime", now);
         criteria.andEqualTo("sendMessageId", "");
         criteria.andNotEqualTo("pic", "");
@@ -200,6 +208,7 @@ public class MemoryService {
         example.setOrderByClause("createTime asc");
         Example.Criteria criteria = example.createCriteria();
         criteria.andEqualTo("done", 0);
+        criteria.andEqualTo("msgType", 1);
         criteria.andLessThanOrEqualTo("sendTime", DateUtil.offsetHour(now, -12));
         criteria.andNotEqualTo("sendMessageId", "");
         List<Task> tasks = taskDao.selectByExample(example);
@@ -486,4 +495,199 @@ public class MemoryService {
         }
     }
 
+
+
+    /**提醒**/
+    // 正则表达式模式，用于匹配 "提醒我X时间单位后干某件事情" 的输入
+    private static final String RELATIVE_TIME_PATTERN =
+            "提醒我(\\d+)(分钟|小时|天|月|年)后(.*)";
+
+    // 正则表达式模式，用于匹配 "提醒我YYYY年MM月DD日干某件事情" 的输入
+    private static final String ABSOLUTE_DATE_PATTERN =
+            "提醒我(\\d{4})年(\\d{2})月(\\d{2})日(.*)";
+
+    // 正则表达式模式，用于匹配 "提醒我YYYY年MM月DD日干某件事情" 的输入
+    private static final String ABSOLUTE_DATE_PATTERN_1 =
+            "提醒我(\\d{4})年(\\d{2})月(\\d{2})日(\\d{2})点(\\d{2})分(.*)";
+
+    //提醒我做某件事情
+    public int cueMeDoSth(String openId, String unionId, String userId, String messageId, String text) throws Exception {
+        Task task = new Task();
+        task.setMessageId(messageId);
+        task.setUserId(userId);
+        task.setOpenId(openId);
+        task.setUnionId(unionId);
+        task.setDone(0);
+        task.setStage(0);
+        task.setMsgType(2);
+
+        //获取回忆漫步权重最大值 最后计入的在权重上最后展示
+        Example example = new Example(Task.class);
+        example.selectProperties("showWeight");
+        example.setOrderByClause("showWeight desc");
+        RowBounds rowBounds = new RowBounds(0, 1);
+        List<Task> tasks = taskDao.selectByExampleAndRowBounds(example, rowBounds);
+        task.setShowWeight(tasks.get(0).getShowWeight());
+
+        int i1 = extractReminderInfo(task, text);
+        if (i1 < 1){
+            ImSample.replayMsg(feishuLib.getClient(), messageId, "格式匹配失败了", "", "小可爱");
+            return i1;
+        }
+
+        int i = saveTask(task);
+        if (i < 1) {
+            ImSample.replayMsg(feishuLib.getClient(), messageId, "接收失败了,请重新发送", "", "小可爱");
+        } else {
+            ImSample.replayMsg(feishuLib.getClient(), messageId, "已接收~", "", "小可爱");
+        }
+        return i;
+    }
+
+
+    //获取提醒时间和内容
+    public static int extractReminderInfo(Task task, String input) {
+
+        // 匹配相对时间输入
+        Pattern relativePattern = Pattern.compile(RELATIVE_TIME_PATTERN);
+        Matcher relativeMatcher = relativePattern.matcher(input);
+
+        if (relativeMatcher.matches()) {
+            int timeValue = Integer.parseInt(relativeMatcher.group(1));
+            String timeUnit = relativeMatcher.group(2);
+            String taskStr = relativeMatcher.group(3).trim();
+
+            System.out.println("相对时间提醒: " +
+                    "时间值=" + timeValue + ", 时间单位=" + timeUnit + ", 任务=" + task);
+
+            task.setContent(taskStr);
+            task.setReviewTime(dealTime(timeValue,timeUnit));
+
+            return 1;
+        }
+
+        // 匹配绝对日期输入
+        Pattern absolutePattern1 = Pattern.compile(ABSOLUTE_DATE_PATTERN_1);
+        Matcher absoluteMatcher1 = absolutePattern1.matcher(input);
+
+        if (absoluteMatcher1.matches()) {
+            int year = Integer.parseInt(absoluteMatcher1.group(1));
+            int month = Integer.parseInt(absoluteMatcher1.group(2));
+            int day = Integer.parseInt(absoluteMatcher1.group(3));
+            int hour = Integer.parseInt(absoluteMatcher1.group(4));
+            int min = Integer.parseInt(absoluteMatcher1.group(5));
+            String taskStr = absoluteMatcher1.group(6).trim();
+
+            // 将字符串日期转换为Date对象（这里假设提醒时间为当天的00:00:00）
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            try {
+                Date reminderDate = sdf.parse(year + "-" + month + "-" + day + " " +hour +":"+  min + ":00");
+                System.out.println("绝对日期提醒: " +
+                        "日期=" + sdf.format(reminderDate) + ", 任务=" + task);
+
+                task.setContent(taskStr);
+                task.setReviewTime(reminderDate);
+            } catch (ParseException e) {
+                e.printStackTrace();
+                System.out.println("日期解析失败");
+            }
+
+            return 1;
+        }
+
+        // 匹配绝对日期输入
+        Pattern absolutePattern = Pattern.compile(ABSOLUTE_DATE_PATTERN);
+        Matcher absoluteMatcher = absolutePattern.matcher(input);
+
+        if (absoluteMatcher.matches()) {
+            int year = Integer.parseInt(absoluteMatcher.group(1));
+            int month = Integer.parseInt(absoluteMatcher.group(2));
+            int day = Integer.parseInt(absoluteMatcher.group(3));
+            String taskStr = absoluteMatcher.group(4).trim();
+
+            // 将字符串日期转换为Date对象（这里假设提醒时间为当天的00:00:00）
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            try {
+                Date reminderDate = sdf.parse(year + "-" + month + "-" + day);
+                System.out.println("绝对日期提醒: " +
+                        "日期=" + sdf.format(reminderDate) + ", 任务=" + task);
+
+                task.setContent(taskStr);
+                task.setReviewTime(reminderDate);
+            } catch (ParseException e) {
+                e.printStackTrace();
+                System.out.println("日期解析失败");
+            }
+
+            return 1;
+        }
+
+
+        return 0;
+    }
+
+
+    //根据 时间单体 和 数值, 得到具体日期
+    public static Date dealTime(int timeValue, String timeUnit) {
+        // 创建一个Calendar实例，并设置为当前日期和时间
+        Calendar calendar = Calendar.getInstance();
+
+        switch (timeUnit) {
+            case "分钟":
+                calendar.add(Calendar.MINUTE, timeValue);
+                break;
+            case "小时":
+                calendar.add(Calendar.HOUR, timeValue);
+                break;
+            case "天":
+                calendar.add(Calendar.DATE, timeValue);
+                break;
+            case "月":
+                calendar.add(Calendar.MONTH, timeValue);
+            case "年":
+                calendar.add(Calendar.YEAR, timeValue);
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported time unit: " + timeUnit);
+        }
+
+
+        if (timeUnit.equals("分钟") || timeUnit.equals("小时") ){
+            Date dateFiveMonthsLater = calendar.getTime();
+            return dateFiveMonthsLater;
+        }
+
+        //跨天统一10点叫
+        // 设置小时为10（24小时制）
+        calendar.set(Calendar.HOUR_OF_DAY, 10);
+        // 设置分钟为0（可选，如果你想要精确到分钟）
+        calendar.set(Calendar.MINUTE, 0);
+        // 设置秒为0（可选，如果你想要精确到秒）
+        calendar.set(Calendar.SECOND, 0);
+        // 设置毫秒为0（可选，如果你想要精确到毫秒）
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        Date dateFiveMonthsLater = calendar.getTime();
+        return dateFiveMonthsLater;
+    }
+
+    public void sendCueMeDOList(String openId) {
+        Date now = new Date();
+
+        Example example = new Example(Task.class);
+        example.setOrderByClause("createTime asc");
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("msgType", 2);
+        criteria.andEqualTo("done", 0);
+        criteria.andLessThanOrEqualTo("reviewTime", now);
+        criteria.andEqualTo("openId", openId);
+        List<Task> tasks = taskDao.selectByExample(example);
+
+        for (Task task:tasks){
+            ImSample.sendTextMsg(FeishuLib.getClient(), tasks.get(0).getOpenId(), "", "", false, "小主你该做任务啦~",task.getContent());
+            taskDone(task);
+        }
+
+
+    }
 }

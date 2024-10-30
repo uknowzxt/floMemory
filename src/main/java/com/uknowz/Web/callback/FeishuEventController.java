@@ -149,11 +149,11 @@ public class FeishuEventController {
                         if(parentId != null) {//回复消息 完善普图片消息内容
                             memoryService.updateTaskContent(openId, messageId, parentId, text);
                         }else{//文字消息
-                            if (text.startsWith("/find/")) {//搜索标签 /find/我们 他们
-                                String replace = text.replace("/find/", "");
+                            if (text.startsWith("帮我搜索")) {//搜索标签 /find/我们 他们
+                                String replace = text.replace("帮我搜索", "");
                                 memoryService.selectTaskByTags(replace,openId, 0);
-                            }else if(text.startsWith("/record/")){//文字记录  不进行定时推送复习 仅仅可用标签查询
-                                String replace = text.replace("/record/", "");
+                            }else if(text.startsWith("帮我记录")){//文字记录  不进行定时推送复习 仅仅可用标签查询
+                                String replace = text.replace("帮我记录", "");
                                 memoryService.saveTextTask(openId, unionId, userId, messageId, replace);
                             }else if(text.startsWith("/findPic/")){//搜索图片
                                 String replace = text.replace("/findPic/", "");
@@ -170,7 +170,10 @@ public class FeishuEventController {
                                 if(isRequestAllowed("resendTime")) {
                                     memoryService.clearMessageIds(openId);
                                 }
-                            }else {
+                            }else if(text.contains("提醒我")){//提醒内容 没有标签查询 到时提醒
+                                memoryService.cueMeDoSth(openId, unionId, userId, messageId, text);
+                            }
+                            else {
                                 ImSample.sendTextMsg(feishuLib.getClient(), openId,"","",false,helpSimpleTips);
                             }
                         }

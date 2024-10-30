@@ -22,22 +22,25 @@ public class MemorySchedule {
     @Autowired
     private MemoryService memoryService;
 
-    private String[] candidates = {"张阅","张晓婷"};
-    private LocalDate startDate = LocalDate.of(2023, 10, 5); // Replace with your own start date
+    private static String[] candidates = {"张晓婷","张阅"};
+    private static LocalDate startDate = LocalDate.of(2023, 11, 27); // Replace with your own start date
 
 
+    public static void main(String[] args) throws Exception {
+        helpForJob();
+    }
     //工作辅助
     //每天九点半推送今天值班
 //    @Scheduled(cron = "0 0/1 * * * ?")
-    @Scheduled(cron = "0 30 10 * * ?")
-    public void helpForJob() throws Exception {
+    @Scheduled(cron = "0 28 12 * * ?")
+    public static void helpForJob() throws Exception {
 
 
         LocalDate currentDate = LocalDate.now();
         DayOfWeek currentDayOfWeek = currentDate.getDayOfWeek();
         if (currentDayOfWeek == DayOfWeek.SATURDAY || currentDayOfWeek == DayOfWeek.SUNDAY) {
             System.out.println("It's the weekend, no one is on duty.");
-            return;
+//            return;
         }
         int daysBetween = 0;
         LocalDate tempDate = startDate;
@@ -50,6 +53,7 @@ public class MemorySchedule {
 
         int index = daysBetween % candidates.length;
         String personOnDuty = candidates[index];
+        System.out.println(String.format("今日广告对接技术值班:%s",personOnDuty));
         ImSample.sendTextMsg(FeishuLib.getClient(),"ou_5beb69daf448702c6a98adf0a568dfc5", "", "", false, String.format("今日广告对接技术值班:%s",personOnDuty));
 
     }
@@ -92,21 +96,41 @@ public class MemorySchedule {
     }
 
     //如果有发送提示的卡片12小时没有得到回应, 再次提醒
+    boolean memoryReviewAlertStart = true;
     @Scheduled(cron = "0 0/1 * * * ?")
     public void memoryReviewAlert() throws Exception {
-        if (start) {
-            start = false;
+        if (memoryReviewAlertStart) {
+            memoryReviewAlertStart = false;
             try {
                 List<Task> tasks = memoryService.obterTaskAlertList();
                 memoryService.sendReviewCards(tasks);
             }catch (Exception e){
                 e.printStackTrace();
             }finally {
-                start = true;
+                memoryReviewAlertStart = true;
             }
         }
 
     }
+
+
+    //发送当天提醒
+    boolean cueDoListStart = true;
+    @Scheduled(cron = "0 0/1 * * * ?")
+    public void cueDoList() throws Exception {
+        if (cueDoListStart) {
+            cueDoListStart = false;
+            try {
+                memoryService.sendCueMeDOList("ou_5beb69daf448702c6a98adf0a568dfc5");
+            }catch (Exception e){
+                e.printStackTrace();
+            }finally {
+                cueDoListStart = true;
+            }
+        }
+
+    }
+
 
 
 }
