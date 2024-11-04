@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.lark.oapi.Client;
 import com.uknowz.Common.BizResult;
+import com.uknowz.Common.MsgConstant;
 import com.uknowz.Dao.TaskDao;
 import com.uknowz.Pojo.DO.Memory.Task;
 import com.uknowz.Service.ThirdLib.FeishuLib;
@@ -19,10 +20,8 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -77,7 +76,7 @@ public class MemoryService {
         task.setUnionId(unionId);
         task.setDone(1);
         task.setStage(0);
-        task.setMsgType(0);
+        task.setMsgType(MsgConstant.MSG_TYPE_RECORD);
         //获取回忆漫步权重最大值 最后计入的在权重上最后展示
         Example example = new Example(Task.class);
         example.selectProperties("showWeight");
@@ -159,7 +158,7 @@ public class MemoryService {
 
     //获取下次复习时间
     private void setReviewTime(Task task) {
-        if (task.getMsgType() !=  null && task.getMsgType() == 2){
+        if (task.getMsgType() !=  null && task.getMsgType() == MsgConstant.MSG_TYPE_REMAIND){
             return; //提醒时间在提醒分支已经处理好了
         }
         long nextDuration = getNextDuration(task.getStage());
@@ -188,7 +187,7 @@ public class MemoryService {
         example.setOrderByClause("createTime asc");
         Example.Criteria criteria = example.createCriteria();
         criteria.andEqualTo("done", 0);
-        criteria.andEqualTo("msgType", 1);
+        criteria.andEqualTo("msgType", MsgConstant.MSG_TYPE_REMEMBER);
         criteria.andLessThanOrEqualTo("reviewTime", now);
         criteria.andEqualTo("sendMessageId", "");
         criteria.andNotEqualTo("pic", "");
@@ -208,7 +207,7 @@ public class MemoryService {
         example.setOrderByClause("createTime asc");
         Example.Criteria criteria = example.createCriteria();
         criteria.andEqualTo("done", 0);
-        criteria.andEqualTo("msgType", 1);
+        criteria.andEqualTo("msgType", MsgConstant.MSG_TYPE_REMEMBER);
         criteria.andLessThanOrEqualTo("sendTime", DateUtil.offsetHour(now, -12));
         criteria.andNotEqualTo("sendMessageId", "");
         List<Task> tasks = taskDao.selectByExample(example);
@@ -380,6 +379,7 @@ public class MemoryService {
         Example.Criteria criteria = example.createCriteria();
         criteria.andEqualTo("openId", openId);
         criteria.andEqualTo("pic", "");
+        criteria.andEqualTo("msgType",MsgConstant.MSG_TYPE_RECORD);
         example.setOrderByClause("showWeight asc, rand() asc");
         PageHelper.startPage(1, 10);
         List<Task> tasks = taskDao.selectByExample(example);
@@ -506,9 +506,13 @@ public class MemoryService {
     private static final String ABSOLUTE_DATE_PATTERN =
             "提醒我(\\d{4})年(\\d{2})月(\\d{2})日(.*)";
 
-    // 正则表达式模式，用于匹配 "提醒我YYYY年MM月DD日干某件事情" 的输入
+    // 正则表达式模式，用于匹配 "提醒我YYYY年MM月DD日几点几分干某件事情" 的输入
     private static final String ABSOLUTE_DATE_PATTERN_1 =
             "提醒我(\\d{4})年(\\d{2})月(\\d{2})日(\\d{2})点(\\d{2})分(.*)";
+
+    // 正则表达式模式, 用户匹配 "提醒我几点几分干某件事情"
+    private static final String ABSOLUTE_DATE_PATTERN_2 =
+            "提醒我(\\d{2})点(\\d{2})分(.*)";
 
     //提醒我做某件事情
     public int cueMeDoSth(String openId, String unionId, String userId, String messageId, String text) throws Exception {
@@ -519,15 +523,7 @@ public class MemoryService {
         task.setUnionId(unionId);
         task.setDone(0);
         task.setStage(0);
-        task.setMsgType(2);
-
-        //获取回忆漫步权重最大值 最后计入的在权重上最后展示
-        Example example = new Example(Task.class);
-        example.selectProperties("showWeight");
-        example.setOrderByClause("showWeight desc");
-        RowBounds rowBounds = new RowBounds(0, 1);
-        List<Task> tasks = taskDao.selectByExampleAndRowBounds(example, rowBounds);
-        task.setShowWeight(tasks.get(0).getShowWeight());
+        task.setMsgType(MsgConstant.MSG_TYPE_REMAIND);
 
         int i1 = extractReminderInfo(task, text);
         if (i1 < 1){
@@ -566,7 +562,7 @@ public class MemoryService {
             return 1;
         }
 
-        // 匹配绝对日期输入
+        // 匹配绝对日期输入 "提醒我YYYY年MM月DD日几点几分干某件事情"
         Pattern absolutePattern1 = Pattern.compile(ABSOLUTE_DATE_PATTERN_1);
         Matcher absoluteMatcher1 = absolutePattern1.matcher(input);
 
@@ -595,7 +591,7 @@ public class MemoryService {
             return 1;
         }
 
-        // 匹配绝对日期输入
+        // 匹配绝对日期输入 "提醒我YYYY年MM月DD日干某件事情"
         Pattern absolutePattern = Pattern.compile(ABSOLUTE_DATE_PATTERN);
         Matcher absoluteMatcher = absolutePattern.matcher(input);
 
@@ -621,6 +617,31 @@ public class MemoryService {
 
             return 1;
         }
+
+
+        // 匹配绝对日期输入 "提醒我几点几分干某件事情"
+        Pattern absolutePattern2 = Pattern.compile(ABSOLUTE_DATE_PATTERN_2);
+        Matcher absoluteMatcher2 = absolutePattern2.matcher(input);
+
+        if (absoluteMatcher2.matches()) {
+            int hour = Integer.parseInt(absoluteMatcher1.group(1));
+            int min = Integer.parseInt(absoluteMatcher1.group(2));
+            String taskStr = absoluteMatcher1.group(3).trim();
+
+            // 将字符串日期转换为Date对象（这里假设提醒时间为当天的00:00:00）
+            Calendar calendar = Calendar.getInstance();
+            // 设置小时为10（24小时制）
+            calendar.set(Calendar.HOUR_OF_DAY, hour);
+            // 设置分钟为0（可选，如果你想要精确到分钟）
+            calendar.set(Calendar.MINUTE, min);
+            Date reminderDate = calendar.getTime();
+
+            task.setContent(taskStr);
+            task.setReviewTime(reminderDate);
+
+            return 1;
+        }
+
 
 
         return 0;
@@ -677,14 +698,14 @@ public class MemoryService {
         Example example = new Example(Task.class);
         example.setOrderByClause("createTime asc");
         Example.Criteria criteria = example.createCriteria();
-        criteria.andEqualTo("msgType", 2);
+        criteria.andEqualTo("msgType", MsgConstant.MSG_TYPE_REMAIND);
         criteria.andEqualTo("done", 0);
         criteria.andLessThanOrEqualTo("reviewTime", now);
         criteria.andEqualTo("openId", openId);
         List<Task> tasks = taskDao.selectByExample(example);
 
         for (Task task:tasks){
-            ImSample.sendTextMsg(FeishuLib.getClient(), tasks.get(0).getOpenId(), "", "", false, "小主你该做任务啦~",task.getContent());
+            ImSample.sendTextMsg(FeishuLib.getClient(), tasks.get(0).getOpenId(), "", "", false, "提醒:",task.getContent());
             taskDone(task);
         }
 
