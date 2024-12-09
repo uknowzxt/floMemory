@@ -4,8 +4,11 @@ import com.uknowz.Dao.TaskDao;
 import com.uknowz.Pojo.DO.Memory.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import tk.mybatis.mapper.entity.Example;
+
+import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("test")
@@ -25,4 +28,13 @@ public class TestController {
         }}, example);
         return i;
     }
+
+    @RequestMapping(value = "/getUserAgent")
+    public String getUserAgent(HttpServletRequest request) {
+        // 从HttpServletRequest对象中获取User-Agent头信息
+        String userAgent = request.getHeader("User-Agent");
+        return "Your User-Agent is: " + userAgent;
+    }
+
+
 }

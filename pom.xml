@@ -84,6 +84,22 @@
             <artifactId>druid</artifactId>
             <version>1.2.8</version>
         </dependency>
+        <!--测试包名-->
+        <dependency>
+            <groupId>net.dongliu</groupId>
+            <artifactId>apk-parser</artifactId>
+            <version>2.6.10</version> <!-- 根据你的需求指定正确的版本号 -->
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15on</artifactId>
+            <version>1.58</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-jdk15on</artifactId>
+            <version>1.58</version>
+        </dependency>
         <!-- 飞书-->
         <dependency>
             <groupId>com.larksuite.oapi</groupId>
@@ -131,9 +147,10 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>2.4.2</version>
-                <configuration>
-                    <mainClass>com.zj.springboot.SpringBoot01Application</mainClass>
-                </configuration>
+<!--                <configuration>-->
+<!--                    <mainClass>com.uknowz.controller.testswing2</mainClass>-->
+<!--                    <classifier>myexec</classifier>-->
+<!--                </configuration>-->
                 <executions>
                     <execution>
                         <id>repackage</id>
